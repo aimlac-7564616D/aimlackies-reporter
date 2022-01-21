@@ -84,7 +84,7 @@ def call_MET_API(parameter, run='00'):
 
 
 def call_OWM_API():
-    api_key = 'fc48723cebd9fadfc6643d4e6f41b5c8'
+    api_key = '2e99394ff4ce7f8e5279898b7bcd0ae6'
     lat = 52.1051
     lon = -3.6680
     url = f'https://pro.openweathermap.org/data/2.5/forecast/hourly?lat={lat}&lon={lon}&appid={api_key}'

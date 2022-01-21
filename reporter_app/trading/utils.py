@@ -73,7 +73,7 @@ def process(filtered_tab):
     if syspath.endswith("reporter"):
         pkl_filename= "./reporter_app/trading/model/pickle_scaler.pkl"
     else:
-        pkl_filename= "../trading/model/pickle_scaler.pkl"
+        pkl_filename= "./reporter_app/trading/model/pickle_scaler.pkl"
     sc = pickle.load(open(pkl_filename,'rb'))
 
     processed=sc.transform(processed_tab)
@@ -92,7 +92,7 @@ def prediction_model(x):
     if syspath.endswith("reporter"):
         pkl_filename= "./reporter_app/trading/model/pickle_model.pkl"
     else:
-        pkl_filename= "../trading/model/pickle_model.pkl"
+        pkl_filename= "./reporter_app/trading/model/pickle_model.pkl"
 
     with open(pkl_filename, 'rb') as file:
         model = pickle.load(file)

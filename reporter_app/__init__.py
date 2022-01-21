@@ -30,6 +30,8 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     db.init_app(app)
+    with app.app_context():
+        db.engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
     migrate.init_app(app, db)
     user_datastore = SQLAlchemySessionUserDatastore(db.session, reporter_app.models.User, reporter_app.models.Role)
     security = Security(

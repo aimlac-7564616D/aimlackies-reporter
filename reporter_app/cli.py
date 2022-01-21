@@ -1,7 +1,7 @@
 from flask_security import hash_password
 from sqlalchemy.sql import func
 from reporter_app import db
-from reporter_app.models import ElecUse, Co2, ElecGen, RealPowerReadings, RealSiteReadings, Trading,PredictedPrice
+from reporter_app.models import ElecUse, Co2, ElecGen, RealPowerReadings, RealSiteReadings, Trading,PredictedPrice, ClearoutPrice
 from reporter_app.electricity_use.utils import call_leccyfunc
 from reporter_app.electricity_gen.utils import get_energy_gen
 from reporter_app.rse_api.utils import get_device_power, get_site_info, get_bids,get_clearout , post_bids
@@ -56,7 +56,8 @@ def register(app, user_datastore):
 				date_time=row['Time'],
 				electricity_use=row['Electricity Usage (kW)']
 			)
-			db.session.add(newElecUse)
+			if ElecGen.query.get(newElecUse.date_time) is None:
+				db.session.add(newElecUse)
 		db.session.commit()
 
 	@app.cli.command("elec_gen")
@@ -78,7 +79,8 @@ def register(app, user_datastore):
 					wind_gen=row['windenergy'] * numOfTurbunes,
 					solar_gen=row['totalSolarEnergy'] * panel_area
 				)
-				db.session.add(newElecGen)
+				if ElecGen.query.get(newElecGen.date_time) is None:
+					db.session.add(newElecGen)
 		db.session.commit()
 
 
@@ -110,7 +112,8 @@ def register(app, user_datastore):
 			co2=co2Forecast
 		)
 
-		db.session.add(newCo2Value)
+		if Co2.query.get(newCo2Value.date_time) is None:
+			db.session.add(newCo2Value)
 		db.session.commit()
 
 		print ("For the 30-min time period starting:", start, "the grid CO2 intensity (gCO2/kWh) was:", co2Forecast)
@@ -138,7 +141,11 @@ def register(app, user_datastore):
 				device_name=device[0],
 				power_generator=device[1]
 			)
-			db.session.add(newPowerReading)
+			if RealPowerReadings.query.get((
+				newPowerReading.date_time,
+				newPowerReading.device_name
+			)) is None:
+				db.session.add(newPowerReading)
 		db.session.commit()
 
 	@app.cli.command("get_real_site_info")
@@ -150,7 +157,8 @@ def register(app, user_datastore):
 			power=stats['power'],
 			temperature=stats['temperature']
 		)
-		db.session.add(newSiteInfo)
+		if RealSiteReadings.query.get(newSiteInfo.date_time) is None:
+			db.session.add(newSiteInfo)
 		db.session.commit()
 
 	@app.cli.command("predict_price")
@@ -162,14 +170,15 @@ def register(app, user_datastore):
 		date=reported_date.isoformat()[:10]
 		price=get_predicted_price(date)
 		for idx, row in price.iterrows():
-			new_predicted_price=PredictedLoad(
+			new_predicted_price=PredictedPrice(
 				date_time=reported_date,
 				period=idx+1,
 				predicted_load=row["Units(MWh)"],
 				predicted_price=row["Price"]
 			)
 			reported_date=reported_date+timedelta(minutes=30)
-			db.session.add(new_predicted_price)
+			if PredictedPrice.query.get(new_predicted_price.date_time) is None:
+				db.session.add(new_predicted_price)
 		db.session.commit()
         
 	@app.cli.command("store_bids")
@@ -189,8 +198,9 @@ def register(app, user_datastore):
                 bid_type=row["type"],
                 bid_outcome=row["accepted"]                
                 
-			)			
-			db.session.add(new_bids)
+			)
+			if Trading.query.get((new_bids.date_time, new_bids.period)) is None:
+				db.session.add(new_bids)
 
 		db.session.commit()
         
@@ -212,10 +222,11 @@ def register(app, user_datastore):
 	
 		clear_out=get_clearout()        
 		for idx,row in clear_out.iterrows():            
-			co_prices=Trading(
+			co_prices=ClearoutPrice(
 				date_time=row["date"],
 				period=row["period"],
-				clearout_price=row["price"]
+				closing_price=row["price"]
             )
-			db.session.add(co_prices)
+			if ClearoutPrice.query.get((co_prices.date_time, co_prices.period)) is None:
+				db.session.add(co_prices)
 		db.session.commit()

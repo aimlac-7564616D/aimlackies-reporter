@@ -9,12 +9,14 @@
 
 SHELL=/bin/bash
 
-*/30 * * * * (source ~/.bashrc && source ~/.bash_profile && conda activate aimlacReporter && flask co2_for_time && conda deactivate) > /tmp/cronjob.log 2>&1
+*/30 * * * * (cd /workspace/ && source ~/.bashrc && source ~/.bash_profile && source /workspace/venv/bin/activate && flask co2_for_time && deactivate) >> /tmp/cronjob.log 2>&1
 
-59 * * * * (source ~/.bashrc && source ~/.bash_profile && conda activate aimlacReporter && flask generate_elec_use_data && conda deactivate) > /tmp/cronjob.log 2>&1
+59 * * * * (cd /workspace/ && source ~/.bashrc && source ~/.bash_profile && source /workspace/venv/bin/activate && flask generate_elec_use_data && deactivate) >> /tmp/cronjob.log 2>&1
 
-*/5 * * * * (source ~/.bashrc && source ~/.bash_profile && conda activate aimlacReporter && flask get_real_power && conda deactivate) > /tmp/cronjob.log 2>&1
+*/5 * * * * (cd /workspace/ && source ~/.bashrc && source ~/.bash_profile && source /workspace/venv/bin/activate && flask get_real_power && deactivate) >> /tmp/cronjob.log 2>&1
 
-*/5 * * * * (source ~/.bashrc && source ~/.bash_profile && conda activate aimlacReporter && flask get_real_site_info && conda deactivate) > /tmp/cronjob.log 2>&1
+*/5 * * * * (cd /workspace/ && source ~/.bashrc && source ~/.bash_profile && source /workspace/venv/bin/activate && flask get_real_site_info && deactivate) >> /tmp/cronjob.log 2>&1
 
-* */12 * * * (source ~/.bashrc && source ~/.bash_profile && conda activate aimlacReporter && flask elec_gen && conda deactivate) > /tmp/cronjob.log 2>&1
+* */12 * * * (cd /workspace/ && source ~/.bashrc && source ~/.bash_profile && source /workspace/venv/bin/activate && flask elec_gen && deactivate) >> /tmp/cronjob.log 2>&1
+
+31 8 * * * (cd /workspace/ && source ~/.bashrc && source ~/.bash_profile && source /workspace/venv/bin/activate && flask predict_price && flask make_bids && flask store_bids && flask clearout_prices && deactivate) >> /tmp/cronjob.log 2>&1
