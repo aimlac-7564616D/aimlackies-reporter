@@ -1,6 +1,5 @@
 #!/bin/bash
 . ~/.bash_profile
-. venv/bin/activate
 export FLASK_APP=reporter.py
 export FLASK_ENV=development
 
