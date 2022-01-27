@@ -17,20 +17,16 @@ RUN service mysql start \
     GRANT ALL PRIVILEGES ON * . * TO 'user0'@'%';\n \
     FLUSH PRIVILEGES;" \
  && mysql -u "root" -e "CREATE DATABASE IF NOT EXISTS local_reporter;"
-# write environment variables
-RUN echo -n \
-"export AIMLAC_CC_MACHINE=34.72.51.59\n\
-export AIMLAC_API_KEY=AIMLACkies275001901\n\
-export AIMLACKIES_REPORTER_SECRET_KEY=W5Jal+qx9vOh8gjaugNZPg==\n\
-export AIMLACKIES_REPORTER_SECURITY_PASSWORD_SALT=288872824872550364092124909785067926279\n\
-export AIMLACKIES_REPORTER_DATABASE_URL=mysql+pymysql://user0:secret@localhost/local_reporter\n\
-export FLASK_APP=reporter.py\n\
-export FLASK_ENV=development" >> ~/.bash_profile
+ENV AIMLAC_CC_MACHINE="34.72.51.59" \
+    AIMLAC_API_KEY="" \
+    AIMLACKIES_REPORTER_SECRET_KEY="W5Jal+qx9vOh8gjaugNZPg==" \
+    AIMLACKIES_REPORTER_SECURITY_PASSWORD_SALT="288872824872550364092124909785067926279"
 # update flask db
 RUN service mysql start \
- && . ~/.bash_profile \
  && export FLASK_APP=reporter.py \
  && export FLASK_ENV=development \
+ && export AIMLAC_CC_MACHINE=$AIMLAC_CC_MACHINE \
+ && export AIMLACKIES_REPORTER_DATABASE_URL="mysql+pymysql://user0:secret@localhost/local_reporter" \
  && flask db upgrade \
  && flask seed
 
