@@ -47,7 +47,7 @@ traitlets==5.0.5
 wcwidth==0.2.5
 Werkzeug==2.0.1
 WTForms==2.3.3
-numpy==1.21.1
+numpy==1.22.1
 pygrib==2.1.3
 requests==2.26.0
 pandas==1.3.1
